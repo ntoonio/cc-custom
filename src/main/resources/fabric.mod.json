@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "ccc",
+  "version": "${version}",
+
+  "name": "CC-custom",
+  "description": "This is a custom mod for our server CraftnessCraft",
+  "authors": [
+    "ntoonio"
+  ],
+  "contact": {
+    "homepage": "mc.antoon.io",
+    "sources": "https://github.com/ntoonio/cc-custom"
+  },
+
+  "license": "GPL-3",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.antoon.mc.ccc.CCCMain"
+    ]
+  },
+  "mixins": [
+    "ccc.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x"
+  },
+  "accessWidener" : "ccc.accesswidener"
+}
