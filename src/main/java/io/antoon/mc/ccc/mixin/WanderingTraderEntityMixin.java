@@ -6,7 +6,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
@@ -28,9 +28,9 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 		if (CCCMain.cccRandom.nextBoolean()) {
 			// Set up the head
 			ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
-			CompoundTag tag = new CompoundTag();
+			NbtCompound tag = new NbtCompound();
 			tag.putString("SkullOwner", CCCMain.getRandomSkullOwner());
-			itemStack.setTag(tag);
+			itemStack.setNbt(tag);
 
 			// Create trade offer
 			TradeOffer headOffer = new TradeOffer(new ItemStack(Items.DIAMOND), ItemStack.EMPTY, itemStack, 4, 1, 1);

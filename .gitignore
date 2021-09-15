@@ -2,6 +2,7 @@
 _*
 *.log
 run/
+remappedSrc/
 
 ### https://github.com/github/gitignore/
 

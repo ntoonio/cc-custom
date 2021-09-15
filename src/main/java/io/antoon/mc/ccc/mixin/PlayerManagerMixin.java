@@ -15,4 +15,9 @@ public abstract class PlayerManagerMixin {
 	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
 		ExternalRequestManager.seenPlayer(player.getName().asString(), player.getUuidAsString());
 	}
+
+	@Inject(at = @At(value = "HEAD"), method = "remove")
+	public void remove(ServerPlayerEntity player, CallbackInfo info) {
+		ExternalRequestManager.seenPlayer(player.getUuidAsString(), player.getPos(), true);
+	}
 }

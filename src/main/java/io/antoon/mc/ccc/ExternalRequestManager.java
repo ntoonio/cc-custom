@@ -1,37 +1,44 @@
 package io.antoon.mc.ccc;
 
-/*import io.netty.handler.codec.http.HttpHeaders;
-import org.asynchttpclient.*;
+import net.minecraft.util.math.Vec3d;
 
-import java.security.Security;
-
-import static org.asynchttpclient.Dsl.*;*/
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.function.Consumer;
 
 public class ExternalRequestManager {
-	//static AsyncHttpClient asyncHttpClient = asyncHttpClient();
+	static String baseUrl = "http://localhost:8080/";
+	static String apiSecret = "yxikaxikolmi";
 
-	private static void request(String url) {
-		System.out.println(("\"Requesting\" " + url));
-		/*asyncHttpClient.prepareGet(url).execute(new AsyncCompletionHandler<Response>() {
-			@Override
-			public Response onCompleted(Response response) throws Exception {
-				System.out.println("onComplete");
-				System.out.println(response.getResponseBody());
-				return response;
-			}
-
-			@Override
-			public void onThrowable(Throwable t) {
-				super.onThrowable(t);
-				System.out.println("onThrowable");
-				System.out.println(t.toString());
-			}
-		});*/
+	private static void request(String url, String parameters) {
+		request(url, parameters, httpResponse -> { /* Empty. Can this be defined in a better way? */ });
 	}
 
+	private static void request(String url, String parameters, Consumer<HttpResponse<String>> onResponse) {
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?secret=" + apiSecret + "&" + parameters)).build();
+
+		try {
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
+		}
+		catch (Exception e) {}
+	}
+
+	// Called in an interval and when the player disconnects
+	public static void seenPlayer(String uuid, Vec3d pos, Boolean disconnected) {
+		request(baseUrl + "ccc/api/seenPlayer", "uuid=" + uuid + "&pos=" + pos.x + "," + pos.y + "," + pos.z + "&disconnected=" + disconnected);
+	}
+
+	// Called when a player connects. We know that position has not been changed, only the username can have changed.
 	public static void seenPlayer(String username, String uuid) {
-		System.out.println("Seen player '" + username + "' (" + uuid + ")");
-		//request("[url]/api/seenPlayer?username=" + username + "&uuid=" + uuid);
-		request("https://mc.antoon.io/ccc/api/seenPlayer?username=" + username + "&uuid=" + uuid);
+		request(baseUrl + "ccc/api/seenPlayer", "uuid=" + uuid + "&username=" + username);
+	}
+
+	public static void verifyCode(String uuid, String code, Consumer<Boolean> onComplete) {
+		request(baseUrl + "ccc/api/verify", "uuid=" + uuid + "&code=" + code, httpResponse -> {
+			onComplete.accept(httpResponse.statusCode() == 200);
+		});
 	}
 }

@@ -2,13 +2,12 @@
   "required": true,
   "minVersion": "0.8",
   "package": "io.antoon.mc.ccc.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "WanderingTraderEntityMixin"
   ],
   "server": [
-    "PlayerManagerMixin",
-    "WanderingTraderEntityMixin"
+    "WanderingTraderEntityMixin",
+    "PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
