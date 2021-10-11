@@ -3,14 +3,19 @@ package io.antoon.mc.ccc;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class CCCMain implements ModInitializer {
 	public static Random cccRandom = new Random(); // Maybe we don't need our own randomizer, but I'm scared to mess up something
-	public static String skullOwners[] = new String[] {"ntoonio", "sosseskalman", "Pat_ASW2"};
+	public static List<String> skullOwners;
+
+	public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public static String getRandomSkullOwner() {
-		return skullOwners[cccRandom.nextInt(skullOwners.length)];
+		return skullOwners.get(cccRandom.nextInt(skullOwners.size()));
 	}
 
 	@Override
@@ -21,6 +26,10 @@ public class CCCMain implements ModInitializer {
 			if (dedicated) {
 				CCCommand.register(dispatcher);
 			}
+		});
+
+		ExternalRequestManager.getHeads(heads -> {
+			skullOwners = heads;
 		});
 	}
 }

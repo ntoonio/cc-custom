@@ -1,11 +1,15 @@
 package io.antoon.mc.ccc;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import net.minecraft.util.math.Vec3d;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class ExternalRequestManager {
@@ -39,6 +43,21 @@ public class ExternalRequestManager {
 	public static void verifyCode(String uuid, String code, Consumer<Boolean> onComplete) {
 		request(baseUrl + "ccc/api/verify", "uuid=" + uuid + "&code=" + code, httpResponse -> {
 			onComplete.accept(httpResponse.statusCode() == 200);
+		});
+	}
+
+	public static void getHeads(Consumer<List<String>> onComplete) {
+		request(baseUrl + "ccc/api/heads", "", httpResponse -> {
+			String json = httpResponse.body();
+
+			try {
+				Gson gson = new Gson();
+				Type datasetListType = new TypeToken<Collection<String>>() {}.getType();
+				onComplete.accept(gson.fromJson(json, datasetListType));
+			}
+			catch (Exception e) {
+				onComplete.accept(Collections.emptyList());
+			}
 		});
 	}
 }
