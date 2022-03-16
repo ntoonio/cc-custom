@@ -15,6 +15,9 @@ public class CCCMain implements ModInitializer {
 	public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public static String getRandomSkullOwner() {
+		if (skullOwners == null || skullOwners.isEmpty())
+			return "PonchooMannen";
+
 		return skullOwners.get(cccRandom.nextInt(skullOwners.size()));
 	}
 
