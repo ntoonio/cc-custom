@@ -29,15 +29,12 @@ public abstract class PlayerManagerMixin {
 		ExternalRequestManager.seenPlayer(player.getUuidAsString(), player.getPos(), true);
 	}
 
-	@Inject(at = @At(value = "TAIL"), method = "<init>()V")
+	@Inject(at = @At(value = "TAIL"), method = "<init>")
 	public void init(MinecraftServer server, DynamicRegistryManager.Immutable registryManager, WorldSaveHandler saveHandler, int maxPlayers, CallbackInfo info) {
-		final ScheduledFuture<?> seenUpdateHandle = CCCMain.scheduler.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				// A bit weird to getPlayerManager though server but...
-				for (int i = 0; i < server.getPlayerManager().getPlayerList().size(); i++) {
-					ExternalRequestManager.seenPlayer(server.getPlayerManager().getPlayerList().get(i).getUuidAsString(), server.getPlayerManager().getPlayerList().get(i).getPos(), false);
-				}
+		final ScheduledFuture<?> seenUpdateHandle = CCCMain.scheduler.scheduleAtFixedRate(() -> {
+			// A bit weird to getPlayerManager though server but...
+			for (int i = 0; i < server.getPlayerManager().getPlayerList().size(); i++) {
+				ExternalRequestManager.seenPlayer(server.getPlayerManager().getPlayerList().get(i).getUuidAsString(), server.getPlayerManager().getPlayerList().get(i).getPos(), false);
 			}
 		}, 0, 60, SECONDS);
 	}
