@@ -30,7 +30,7 @@ public abstract class PlayerManagerMixin {
 	}
 
 	@Inject(at = @At(value = "TAIL"), method = "<init>()V")
-	public void init(MinecraftServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler, int maxPlayers, CallbackInfo info) {
+	public void init(MinecraftServer server, DynamicRegistryManager.Immutable registryManager, WorldSaveHandler saveHandler, int maxPlayers, CallbackInfo info) {
 		final ScheduledFuture<?> seenUpdateHandle = CCCMain.scheduler.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
