@@ -1,7 +1,7 @@
 package io.antoon.mc.ccc;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import java.util.List;
 import java.util.Random;
@@ -25,8 +25,8 @@ public class CCCMain implements ModInitializer {
 	public void onInitialize() {
 		System.out.println("CCC mod initialized");
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-			if (dedicated) {
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			if (environment.dedicated) {
 				CCCommand.register(dispatcher);
 			}
 		});
