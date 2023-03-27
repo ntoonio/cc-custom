@@ -5,6 +5,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -25,12 +27,14 @@ public class CCCMain implements ModInitializer {
 	public void onInitialize() {
 		System.out.println("CCC mod initialized");
 
+		// Register command
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			if (environment.dedicated) {
 				CCCommand.register(dispatcher);
 			}
 		});
 
+		// Fetch player heads from API
 		ExternalRequestManager.getHeads(heads -> {
 			skullOwners = heads;
 		});

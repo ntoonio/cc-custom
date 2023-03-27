@@ -32,8 +32,11 @@ public abstract class PlayerManagerMixin {
 	@Inject(at = @At(value = "TAIL"), method = "<init>")
 	public void init(MinecraftServer server, CombinedDynamicRegistries registryManager, WorldSaveHandler saveHandler, int maxPlayers, CallbackInfo info) {
 		final ScheduledFuture<?> seenUpdateHandle = CCCMain.scheduler.scheduleAtFixedRate(() -> {
+			System.out.print("Updating players...");
 			// A bit weird to getPlayerManager though server but...
 			for (int i = 0; i < server.getPlayerManager().getPlayerList().size(); i++) {
+				System.out.print("- ");
+				System.out.println(server.getPlayerManager().getPlayerList().get(i).getPlayerListName());
 				//((ServerPlayerEntity)this.players.get(i)).getGameProfile().getName();
 				ExternalRequestManager.seenPlayer(server.getPlayerManager().getPlayerList().get(i).getUuidAsString(), server.getPlayerManager().getPlayerList().get(i).getPos(), false);
 			}
