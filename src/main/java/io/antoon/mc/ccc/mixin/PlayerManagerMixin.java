@@ -13,33 +13,29 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.concurrent.ScheduledFuture;
-
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
+
 	@Inject(at = @At(value = "HEAD"), method = "onPlayerConnect")
 	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
-		ExternalRequestManager.seenPlayer(player.getName().getString(), player.getUuidAsString());
+		ExternalRequestManager.seenPlayer(player, true);
 	}
 
 	@Inject(at = @At(value = "HEAD"), method = "remove")
 	public void remove(ServerPlayerEntity player, CallbackInfo info) {
-		ExternalRequestManager.seenPlayer(player.getUuidAsString(), player.getPos(), true);
+		ExternalRequestManager.seenPlayer(player, false);
 	}
 
 	@Inject(at = @At(value = "TAIL"), method = "<init>")
 	public void init(MinecraftServer server, CombinedDynamicRegistries registryManager, WorldSaveHandler saveHandler, int maxPlayers, CallbackInfo info) {
-		final ScheduledFuture<?> seenUpdateHandle = CCCMain.scheduler.scheduleAtFixedRate(() -> {
-			System.out.print("Updating players...");
-			// A bit weird to getPlayerManager though server but...
-			for (int i = 0; i < server.getPlayerManager().getPlayerList().size(); i++) {
-				System.out.print("- ");
-				System.out.println(server.getPlayerManager().getPlayerList().get(i).getPlayerListName());
-				//((ServerPlayerEntity)this.players.get(i)).getGameProfile().getName();
-				ExternalRequestManager.seenPlayer(server.getPlayerManager().getPlayerList().get(i).getUuidAsString(), server.getPlayerManager().getPlayerList().get(i).getPos(), false);
+		// Send players status now and every minute
+		CCCMain.scheduler.scheduleAtFixedRate(() -> {
+			if (server.getPlayerManager() != null) {
+				ExternalRequestManager.seenMultiplePlayers(server.getPlayerManager().getPlayerList(), true);
 			}
 		}, 0, 60, SECONDS);
+
 	}
 }

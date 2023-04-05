@@ -2,13 +2,14 @@ package io.antoon.mc.ccc;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.server.PlayerManager;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class CCCMain implements ModInitializer {
 	public static Random cccRandom = new Random(); // Maybe we don't need our own randomizer, but I'm scared to mess up something
@@ -16,17 +17,8 @@ public class CCCMain implements ModInitializer {
 
 	public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-	public static String getRandomSkullOwner() {
-		if (skullOwners == null || skullOwners.isEmpty())
-			return "PonchooMannen";
-
-		return skullOwners.get(cccRandom.nextInt(skullOwners.size()));
-	}
-
 	@Override
 	public void onInitialize() {
-		System.out.println("CCC mod initialized");
-
 		// Register command
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			if (environment.dedicated) {
@@ -38,5 +30,12 @@ public class CCCMain implements ModInitializer {
 		ExternalRequestManager.getHeads(heads -> {
 			skullOwners = heads;
 		});
+	}
+
+	public static String getRandomSkullOwner() {
+		if (skullOwners == null || skullOwners.isEmpty())
+			return "PonchooMannen";
+
+		return skullOwners.get(cccRandom.nextInt(skullOwners.size()));
 	}
 }

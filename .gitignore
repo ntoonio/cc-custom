@@ -3,6 +3,7 @@ _*
 *.log
 run/
 remappedSrc/
+.idea/runConfigurations/*
 
 ### https://github.com/github/gitignore/
 

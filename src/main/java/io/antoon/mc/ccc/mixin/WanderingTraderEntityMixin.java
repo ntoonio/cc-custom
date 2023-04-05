@@ -17,13 +17,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WanderingTraderEntity.class)
 public abstract class WanderingTraderEntityMixin extends MerchantEntity {
+
 	public WanderingTraderEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	@Inject(at=@At(value="RETURN"), method="fillRecipes")
 	protected void fillRecipes(CallbackInfo info) {
-
 		// 50-50 to add a player's head
 		if (CCCMain.cccRandom.nextBoolean()) {
 			// Set up the head
@@ -36,8 +36,7 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 			TradeOffer headOffer = new TradeOffer(new ItemStack(Items.DIAMOND), ItemStack.EMPTY, itemStack, 4, 1, 1);
 
 			// Add trade to list
-			TradeOfferList tradeOfferList = this.getOffers();
-			tradeOfferList.add(headOffer);
+			this.getOffers().add(headOffer);
 		}
 	}
 }

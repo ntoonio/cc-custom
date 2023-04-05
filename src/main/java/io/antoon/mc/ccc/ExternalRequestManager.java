@@ -2,7 +2,9 @@ package io.antoon.mc.ccc;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -16,38 +18,31 @@ public class ExternalRequestManager {
 	static String baseUrl = "http://localhost:8080/";
 	static String apiSecret = "yxikaxikolmi";
 
-	private static void request(String url, String parameters) {
-		request(url, parameters, httpResponse -> { /* Empty. Can this be defined in a better way? */ });
+	public static void seenPlayer(ServerPlayerEntity player, boolean online) {
+		String body = generateSeenPlayerJson(player, online);
+		requestPut(baseUrl + "ccc/api/seenPlayer", body);
 	}
 
-	private static void request(String url, String parameters, Consumer<HttpResponse<String>> onResponse) {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?secret=" + apiSecret + "&" + parameters)).build();
+	public static void seenMultiplePlayers(List<ServerPlayerEntity> players, boolean online) {
+		List<String> playerData = new ArrayList<>();
 
-		try {
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
+		for (int i = 0; i < players.size(); i++) {
+			playerData.add(generateSeenPlayerJson(players.get(i), online));
 		}
-		catch (Exception e) {}
-	}
 
-	// Called in an interval and when the player disconnects
-	public static void seenPlayer(String uuid, Vec3d pos, Boolean disconnected) {
-		request(baseUrl + "ccc/api/seenPlayer", "uuid=" + uuid + "&pos=" + pos.x + "," + pos.y + "," + pos.z + "&disconnected=" + disconnected);
-	}
+		String body = "[" + String.join(",", playerData) + "]";
 
-	// Called when a player connects. We know that position has not been changed, only the username can have changed.
-	public static void seenPlayer(String username, String uuid) {
-		request(baseUrl + "ccc/api/seenPlayer", "uuid=" + uuid + "&username=" + username);
+		requestPut(baseUrl + "ccc/api/seenPlayers", body);
 	}
 
 	public static void verifyCode(String uuid, String code, Consumer<Boolean> onComplete) {
-		request(baseUrl + "ccc/api/verify", "uuid=" + uuid + "&code=" + code, httpResponse -> {
+		requestGet(baseUrl + "ccc/api/verify", "uuid=" + uuid + "&code=" + code, httpResponse -> {
 			onComplete.accept(httpResponse.statusCode() == 200);
 		});
 	}
 
 	public static void getHeads(Consumer<List<String>> onComplete) {
-		request(baseUrl + "ccc/api/heads", "", httpResponse -> {
+		requestGet(baseUrl + "ccc/api/heads", "", httpResponse -> {
 			String json = httpResponse.body();
 
 			try {
@@ -59,5 +54,41 @@ public class ExternalRequestManager {
 				onComplete.accept(Collections.emptyList());
 			}
 		});
+	}
+
+	private static String generateSeenPlayerJson(ServerPlayerEntity player, boolean online) {
+		String uuid = player.getUuidAsString();
+		String playername = player.getName().getString();
+		Vec3d pos = player.getPos();
+		String dimension = player.world.getDimensionKey().getValue().toString();
+
+		String jsonStr = "{";
+		jsonStr += "\"playername\": \"" + playername + "\",\n";
+		jsonStr += "\"uuid\": \"" + uuid + "\",\n";
+		jsonStr += "\"dimension\": \"" + dimension + "\",\n";
+		jsonStr += "\"pos\": \"" + pos.x + ";" + pos.y + pos.z + ";" + "\",\n";
+		jsonStr += "\"online\": \"" + (online ? "true" : "false") + "\",\n";
+		jsonStr += "}";
+
+		return jsonStr;
+	}
+
+	private static void requestGet(String url, String parameters, Consumer<HttpResponse<String>> onResponse) {
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?secret=" + apiSecret + "&" + parameters)).build();
+
+		try {
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
+		}
+		catch (Exception e) {}
+	}
+
+	private static void requestPut(String url, String body) {
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.header("Content-Type", "application/json")
+				.PUT(HttpRequest.BodyPublishers.ofString(body))
+				.build();
 	}
 }

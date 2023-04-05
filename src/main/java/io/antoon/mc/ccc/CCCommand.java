@@ -15,6 +15,12 @@ public class CCCommand {
 						(context) -> executeVerify(context.getSource(), context.getSource().getPlayer().getUuidAsString(), StringArgumentType.getString(context, "code"))
 				)))
 		);
+
+		dispatcher.register(
+				literal("cc").then(literal("heads").executes(
+						(context) -> executeHeads(context.getSource())
+				))
+		);
 	}
 
 	private static int executeVerify(ServerCommandSource source, String uuid, String code) {
@@ -25,6 +31,11 @@ public class CCCommand {
 				source.sendFeedback(Text.of("Verification failed"), false);
 		});
 
+		return 1;
+	}
+
+	private static int executeHeads(ServerCommandSource source) {
+		source.sendFeedback(Text.of(String.join(", ", CCCMain.skullOwners)), false);
 		return 1;
 	}
 }
