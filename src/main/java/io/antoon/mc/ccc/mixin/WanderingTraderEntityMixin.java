@@ -11,16 +11,13 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WanderingTraderEntity.class)
-public abstract class WanderingTraderEntityMixin extends MerchantEntity {
-
-	public WanderingTraderEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
-		super(entityType, world);
-	}
+public abstract class WanderingTraderEntityMixin {
 
 	@Inject(at=@At(value="RETURN"), method="fillRecipes")
 	protected void fillRecipes(CallbackInfo info) {
@@ -36,7 +33,8 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 			TradeOffer headOffer = new TradeOffer(new ItemStack(Items.DIAMOND), ItemStack.EMPTY, itemStack, 4, 1, 1);
 
 			// Add trade to list
-			this.getOffers().add(headOffer);
+			WanderingTraderEntity self = (WanderingTraderEntity) (Object) this;
+			self.getOffers().add(headOffer);
 		}
 	}
 }

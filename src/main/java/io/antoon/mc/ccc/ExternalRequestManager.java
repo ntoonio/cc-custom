@@ -15,12 +15,12 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class ExternalRequestManager {
-	static String baseUrl = "http://localhost:8080/";
+	static String baseUrl = "http://localhost:5000/";
 	static String apiSecret = "yxikaxikolmi";
 
 	public static void seenPlayer(ServerPlayerEntity player, boolean online) {
 		String body = generateSeenPlayerJson(player, online);
-		requestPut(baseUrl + "ccc/api/seenPlayer", body);
+		requestPut(baseUrl + "ccc/api/seenPlayer", body, r -> {});
 	}
 
 	public static void seenMultiplePlayers(List<ServerPlayerEntity> players, boolean online) {
@@ -32,17 +32,22 @@ public class ExternalRequestManager {
 
 		String body = "[" + String.join(",", playerData) + "]";
 
-		requestPut(baseUrl + "ccc/api/seenPlayers", body);
+		requestPut(baseUrl + "ccc/api/seenMultiplePlayers", body, r -> {});
 	}
 
 	public static void verifyCode(String uuid, String code, Consumer<Boolean> onComplete) {
-		requestGet(baseUrl + "ccc/api/verify", "uuid=" + uuid + "&code=" + code, httpResponse -> {
+		String body = "{";
+		body += "\"uuid\": \"" + uuid + "\",";
+		body += "\"code\": \"" + code + "\"";
+		body += "}";
+
+		requestPut(baseUrl + "ccc/api/verify", body, httpResponse -> {
 			onComplete.accept(httpResponse.statusCode() == 200);
 		});
 	}
 
 	public static void getHeads(Consumer<List<String>> onComplete) {
-		requestGet(baseUrl + "ccc/api/heads", "", httpResponse -> {
+		requestGet(baseUrl + "ccc/api/heads", httpResponse -> {
 			String json = httpResponse.body();
 
 			try {
@@ -63,19 +68,22 @@ public class ExternalRequestManager {
 		String dimension = player.world.getDimensionKey().getValue().toString();
 
 		String jsonStr = "{";
-		jsonStr += "\"playername\": \"" + playername + "\",\n";
-		jsonStr += "\"uuid\": \"" + uuid + "\",\n";
-		jsonStr += "\"dimension\": \"" + dimension + "\",\n";
-		jsonStr += "\"pos\": \"" + pos.x + ";" + pos.y + pos.z + ";" + "\",\n";
-		jsonStr += "\"online\": \"" + (online ? "true" : "false") + "\",\n";
+		jsonStr += "\"uuid\": \"" + uuid + "\",";
+		jsonStr += "\"playername\": \"" + playername + "\",";
+		jsonStr += "\"position\": \"" + pos.x + ";" + pos.y + ";" + pos.z + "\",";
+		jsonStr += "\"dimension\": \"" + dimension + "\",";
+		jsonStr += "\"online\": " + (online ? "true" : "false");
 		jsonStr += "}";
 
 		return jsonStr;
 	}
 
-	private static void requestGet(String url, String parameters, Consumer<HttpResponse<String>> onResponse) {
+	private static void requestGet(String url, Consumer<HttpResponse<String>> onResponse) {
 		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?secret=" + apiSecret + "&" + parameters)).build();
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.header("Authentication", apiSecret)
+				.build();
 
 		try {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
@@ -83,12 +91,17 @@ public class ExternalRequestManager {
 		catch (Exception e) {}
 	}
 
-	private static void requestPut(String url, String body) {
+	private static void requestPut(String url, String body, Consumer<HttpResponse<String>> onResponse) {
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.header("Content-Type", "application/json")
+				.header("Authentication", apiSecret)
 				.PUT(HttpRequest.BodyPublishers.ofString(body))
 				.build();
+		try {
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
+		}
+		catch (Exception e) {}
 	}
 }
