@@ -27,20 +27,24 @@ public class EndermanEntityMixin extends MobEntity {
 	Block getCarriedBlockOnSpawn() {
 		int i = CCCMain.cccRandom.nextInt(500);
 
-		if (i < 125) { // 25%
+		if (i < 25) { // 5%
 			return Blocks.GRASS_BLOCK;
 		}
 
-		if (i < 175) { // 10%
+		if (i < 35) { // 2%
 			return Blocks.SAND;
 		}
 
-		if (i < 200) { // 5%
+		if (i < 45) { // 2%
 			return Blocks.GRAVEL;
 		}
 
-		if (i < 205) { // 1%
+		if (i < 50) { // 1%
 			return Blocks.GLOWSTONE;
+		}
+
+		if (i < 53) { // 0.6%
+			return Blocks.TNT;
 		}
 
 		if (i == 499) { // 0.2%
@@ -55,8 +59,8 @@ public class EndermanEntityMixin extends MobEntity {
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
 		EndermanEntity self = (EndermanEntity) (Object) this;
 
-		// Chance to spawn with a block if there is no NBT
-		if (entityNbt == null) {
+		// Chance to spawn with a block if there is no NBT and in the overworld
+		if (entityNbt == null && CCCMain.worldIsOverworld(world.toServerWorld())) {
 			self.setCarriedBlock(getCarriedBlockOnSpawn().getDefaultState());
 		}
 

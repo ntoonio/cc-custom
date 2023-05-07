@@ -1,5 +1,6 @@
 package io.antoon.mc.ccc.mixin;
 
+import io.antoon.mc.ccc.CCCMain;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,7 +14,7 @@ public class PlayerEntityMixin {
 		PlayerEntity self = (PlayerEntity) (Object) this;
 
 		// No elytra in overworld
-		if (self.world.getDimensionKey().getValue().toString().equals("minecraft:overworld")) {
+		if (CCCMain.worldIsOverworld(self.world)) {
 			info.setReturnValue(false);
 		}
 	}
