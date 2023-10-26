@@ -24,7 +24,7 @@ public class EndermanEntityMixin extends MobEntity {
 		super(entityType, world);
 	}
 
-	Block getCarriedBlockOnSpawn() {
+	Block getRandomSpawnBlock() {
 		int i = CCCMain.cccRandom.nextInt(500);
 
 		if (i < 25) { // 5%
@@ -61,10 +61,16 @@ public class EndermanEntityMixin extends MobEntity {
 
 		// Chance to spawn with a block if there is no NBT and in the overworld
 		if (entityNbt == null && CCCMain.worldIsOverworld(world.toServerWorld())) {
-			self.setCarriedBlock(getCarriedBlockOnSpawn().getDefaultState());
+			self.setCarriedBlock(getRandomSpawnBlock().getDefaultState());
 		}
 
 		return entityData;
+	}
+
+	// Ignore whether the Enderman is holding a block or not
+	@Override
+	public boolean cannotDespawn() {
+		return super.cannotDespawn();
 	}
 
 	// Don't drop the block the enderman is holding

@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
 	@Inject(method = "checkFallFlying", at = @At(value = "HEAD"), cancellable = true)
-	void checkFallFlying(CallbackInfoReturnable info) {
+	void checkFallFlying(CallbackInfoReturnable<Boolean> info) {
 		PlayerEntity self = (PlayerEntity) (Object) this;
 
 		// No elytra in overworld
-		if (CCCMain.worldIsOverworld(self.world)) {
+		if (CCCMain.worldIsOverworld(self.getWorld())) {
 			info.setReturnValue(false);
 		}
 	}

@@ -6,6 +6,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.WorldSaveHandler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,9 +18,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
-
 	@Inject(at = @At(value = "HEAD"), method = "onPlayerConnect")
-	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
+	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData data, CallbackInfo info) {
 		ExternalRequestManager.seenPlayer(player, true);
 	}
 
@@ -36,6 +36,5 @@ public abstract class PlayerManagerMixin {
 				ExternalRequestManager.seenMultiplePlayers(server.getPlayerManager().getPlayerList(), true);
 			}
 		}, 0, 60, SECONDS);
-
 	}
 }
