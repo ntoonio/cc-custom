@@ -4,6 +4,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -34,7 +36,7 @@ public class CCCMain implements ModInitializer {
 	}
 
 	public static boolean worldIsOverworld(World world) {
-		return world.getDimensionKey().getValue().toString().equals("minecraft:overworld");
+		return world.getRegistryKey() == World.OVERWORLD;
 	}
 
 	public static String getRandomSkullOwner() {

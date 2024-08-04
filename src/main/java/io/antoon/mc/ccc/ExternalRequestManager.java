@@ -65,7 +65,7 @@ public class ExternalRequestManager {
 		String uuid = player.getUuidAsString();
 		String playername = player.getName().getString();
 		Vec3d pos = player.getPos();
-		String dimension = player.world.getDimensionKey().getValue().toString();
+		String dimension = player.getWorld().getDimensionEntry().getIdAsString();
 
 		String jsonStr = "{";
 		jsonStr += "\"uuid\": \"" + uuid + "\",";

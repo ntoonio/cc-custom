@@ -1,6 +1,9 @@
 # CC-Custom
 This is a mod that adds some custom functionality to our Minecraft server _CraftnessCraft_.
 
+## Guide on how to update to new Minecraft version
+https://fabricmc.net/wiki/tutorial:migratemappings
+
 ## License
 
 Copyright (C) 2021  Anton Lindroth

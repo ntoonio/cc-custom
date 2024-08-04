@@ -54,7 +54,7 @@ public class EndermanEntityMixin extends MobEntity {
 		return Blocks.AIR; // This works but I hate that it works. Should have to be null here or something
 	}
 
-	@Nullable
+	/*@Nullable
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
 		EndermanEntity self = (EndermanEntity) (Object) this;
@@ -65,7 +65,7 @@ public class EndermanEntityMixin extends MobEntity {
 		}
 
 		return entityData;
-	}
+	}*/
 
 	// Don't drop the block the enderman is holding
 	@Inject(method = "dropEquipment", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/EndermanEntity;getCarriedBlock()Lnet/minecraft/block/BlockState;", shift = At.Shift.BEFORE), cancellable = true)
