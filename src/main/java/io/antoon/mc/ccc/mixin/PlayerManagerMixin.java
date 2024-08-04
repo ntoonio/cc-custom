@@ -19,7 +19,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
-
 	@Inject(at = @At(value = "HEAD"), method = "onPlayerConnect")
 	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo info) {
 		ExternalRequestManager.seenPlayer(player, true);
@@ -38,6 +37,5 @@ public abstract class PlayerManagerMixin {
 				ExternalRequestManager.seenMultiplePlayers(server.getPlayerManager().getPlayerList(), true);
 			}
 		}, 0, 60, SECONDS);
-
 	}
 }

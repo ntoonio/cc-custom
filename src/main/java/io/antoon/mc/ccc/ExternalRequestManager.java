@@ -79,7 +79,7 @@ public class ExternalRequestManager {
 	}
 
 	private static void requestGet(String url, Consumer<HttpResponse<String>> onResponse) {
-		HttpClient client = HttpClient.newHttpClient();
+		/*HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.header("Authentication", apiSecret)
@@ -88,11 +88,11 @@ public class ExternalRequestManager {
 		try {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
 		}
-		catch (Exception e) {}
+		catch (Exception e) {}*/
 	}
 
 	private static void requestPut(String url, String body, Consumer<HttpResponse<String>> onResponse) {
-		HttpClient client = HttpClient.newHttpClient();
+		/*HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.header("Content-Type", "application/json")
@@ -102,6 +102,6 @@ public class ExternalRequestManager {
 		try {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
 		}
-		catch (Exception e) {}
+		catch (Exception e) {}*/
 	}
 }

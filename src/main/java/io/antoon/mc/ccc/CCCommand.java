@@ -1,6 +1,8 @@
 package io.antoon.mc.ccc;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.antoon.mc.ccc.CCCMain;
 import net.minecraft.server.command.CommandManager;
@@ -12,7 +14,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class CCCommand {
 	public static void register(CommandDispatcher<ServerCommandSource>  dispatcher) {
 		dispatcher.register(
-				literal("cc").then(literal("verify").then(CommandManager.argument("code", StringArgumentType.string()).executes(
+				literal("cc").then(literal("verify").then(CommandManager.argument("code", StringArgumentType.word()).executes(
 						(context) -> executeVerify(context.getSource(), context.getSource().getPlayer().getUuidAsString(), StringArgumentType.getString(context, "code"))
 				)))
 		);
