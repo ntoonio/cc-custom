@@ -54,18 +54,18 @@ public class EndermanEntityMixin extends MobEntity {
 		return Blocks.AIR; // This works but I hate that it works. Should have to be null here or something
 	}
 
-	/*@Nullable
+	@Nullable
 	@Override
-	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		EndermanEntity self = (EndermanEntity) (Object) this;
 
-		// Chance to spawn with a block if there is no NBT and in the overworld
-		if (entityNbt == null && CCCMain.worldIsOverworld(world.toServerWorld())) {
+		// Chance to spawn with a block if in the overworld
+		if (CCCMain.worldIsOverworld(world.toServerWorld())) {
 			self.setCarriedBlock(getRandomSpawnBlock().getDefaultState());
 		}
 
 		return entityData;
-	}*/
+	}
 
 	// Ignore whether the Enderman is holding a block or not
 	@Override

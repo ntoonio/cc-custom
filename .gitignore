@@ -2,6 +2,7 @@
 _*
 *.log
 run/
+bin/
 remappedSrc/
 .idea/runConfigurations/*
 

@@ -1,6 +1,16 @@
 # CC-Custom
 This is a mod that adds some custom functionality to our Minecraft server _CraftnessCraft_.
 
+## Game changes
+
+- Endermen might spawn with a random block
+- Elytras are not working in overworld
+- Player heads has a 50/50 chance to be available to purchase from wandering traders
+
+## Other changes
+- Sends player online status to external API on login and logout, as well as every minute
+- Command to show heads that can be found in trades
+
 ## Guide on how to update to new Minecraft version
 https://fabricmc.net/wiki/tutorial:migratemappings
 

@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -14,16 +13,21 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class ExternalRequestManager {
-	static String baseUrl = "http://localhost:5000/";
-	static String apiSecret = "yxikaxikolmi";
+import static io.antoon.mc.ccc.CCCMain.CONFIG;
 
+public class ExternalRequestManager {
 	public static void seenPlayer(ServerPlayerEntity player, boolean online) {
-		String body = generateSeenPlayerJson(player, online);
-		requestPut(baseUrl + "ccc/api/seenPlayer", body, r -> {});
+		if (!CONFIG.apiEnabled())
+			return;
+
+		String body = "[" + generateSeenPlayerJson(player, online) + "]";
+		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", body, r -> {});
 	}
 
 	public static void seenMultiplePlayers(List<ServerPlayerEntity> players, boolean online) {
+		if (!CONFIG.apiEnabled())
+			return;
+
 		List<String> playerData = new ArrayList<>();
 
 		for (int i = 0; i < players.size(); i++) {
@@ -32,22 +36,14 @@ public class ExternalRequestManager {
 
 		String body = "[" + String.join(",", playerData) + "]";
 
-		requestPut(baseUrl + "ccc/api/seenMultiplePlayers", body, r -> {});
-	}
-
-	public static void verifyCode(String uuid, String code, Consumer<Boolean> onComplete) {
-		String body = "{";
-		body += "\"uuid\": \"" + uuid + "\",";
-		body += "\"code\": \"" + code + "\"";
-		body += "}";
-
-		requestPut(baseUrl + "ccc/api/verify", body, httpResponse -> {
-			onComplete.accept(httpResponse.statusCode() == 200);
-		});
+		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", body, r -> {});
 	}
 
 	public static void getHeads(Consumer<List<String>> onComplete) {
-		requestGet(baseUrl + "ccc/api/heads", httpResponse -> {
+		if (!CONFIG.apiEnabled())
+			return;
+
+		requestGet(CONFIG.apiUrl + "ccc/api/heads", httpResponse -> {
 			String json = httpResponse.body();
 
 			try {
@@ -79,29 +75,29 @@ public class ExternalRequestManager {
 	}
 
 	private static void requestGet(String url, Consumer<HttpResponse<String>> onResponse) {
-		/*HttpClient client = HttpClient.newHttpClient();
+		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
-				.header("Authentication", apiSecret)
+				.header("Authentication", CONFIG.apiSecret)
 				.build();
 
 		try {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
 		}
-		catch (Exception e) {}*/
+		catch (Exception e) {}
 	}
 
-	private static void requestPut(String url, String body, Consumer<HttpResponse<String>> onResponse) {
-		/*HttpClient client = HttpClient.newHttpClient();
+	private static void requestPut(String url, String bodyJson, Consumer<HttpResponse<String>> onResponse) {
+		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.header("Content-Type", "application/json")
-				.header("Authentication", apiSecret)
-				.PUT(HttpRequest.BodyPublishers.ofString(body))
+				.header("Authentication", CONFIG.apiSecret)
+				.PUT(HttpRequest.BodyPublishers.ofString(bodyJson))
 				.build();
 		try {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(onResponse).join();
 		}
-		catch (Exception e) {}*/
+		catch (Exception e) {}
 	}
 }
