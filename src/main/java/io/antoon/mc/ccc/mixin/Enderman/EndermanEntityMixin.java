@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -17,6 +16,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static io.antoon.mc.ccc.CCCMain.CONFIG;
 
 @Mixin(EndermanEntity.class)
 public class EndermanEntityMixin extends MobEntity {
@@ -60,7 +61,7 @@ public class EndermanEntityMixin extends MobEntity {
 		EndermanEntity self = (EndermanEntity) (Object) this;
 
 		// Chance to spawn with a block if in the overworld
-		if (CCCMain.worldIsOverworld(world.toServerWorld())) {
+		if (CONFIG.customEndermenBlocksEnabled && CCCMain.worldIsOverworld(world.toServerWorld())) {
 			self.setCarriedBlock(getRandomSpawnBlock().getDefaultState());
 		}
 

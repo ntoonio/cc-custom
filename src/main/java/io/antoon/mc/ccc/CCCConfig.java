@@ -24,9 +24,8 @@ public class CCCConfig {
 		return skullOwners.get(CCCMain.cccRandom.nextInt(skullOwners.size()));
 	}
 
-
 	// We don't want feature toggles but this is experimental, and we might want to be able to disable
-	boolean customEndermenBlocksEnabled;
+	public boolean customEndermenBlocksEnabled;
 
 	public boolean apiEnabled() {
 		return apiUrl.length() != 0;
