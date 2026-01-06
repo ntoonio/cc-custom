@@ -1,34 +1,28 @@
 {
-  "schemaVersion": 1,
-  "id": "ccc",
-  "version": "${version}",
-
-  "name": "CC-Custom",
-  "description": "A custom mod for our server CraftnessCraft",
-  "authors": [
-    "ntoonio"
-  ],
-  "contact": {
-    "homepage": "mc.antoon.io",
-    "sources": "https://github.com/ntoonio/cc-custom"
-  },
-
-  "license": "GPL-3",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "io.antoon.mc.ccc.CCCMain"
-    ]
-  },
-  "mixins": [
-    "ccc.mixins.json"
-  ],
-
-  "depends": {
-    "fabricloader": ">=0.16.10",
-    "minecraft": "~1.21",
-    "java": ">=21"
-  },
-  "accessWidener" : "ccc.accesswidener"
+	"schemaVersion": 1,
+	"id": "cc-custom",
+	"version": "${version}",
+	"name": "cc-custom",
+	"description": "A custom mod for our server CraftnessCraft",
+	"authors": [
+		"Anton Lindroth @ntoonio"
+	],
+	"contact": {
+		"homepage": "https://craftnesscraft.org/",
+		"sources": "https://github.com/ntoonio/cc-custom"
+	},
+	"license": "GPL-3.0-only",
+	"icon": "assets/cc-custom/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"org.craftnesscraft.ccc.CCCustom"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
 }

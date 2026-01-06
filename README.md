@@ -1,32 +1,21 @@
 # CC-Custom
 This is a mod that adds some custom functionality to our Minecraft server _CraftnessCraft_.
 
-## Game changes
-
-- Endermen might spawn with a random block
-- Elytras are not working in overworld
-- Player heads has a 50/50 chance to be available to purchase from wandering traders
-
-## Other changes
-- Sends player online status to external API on login and logout, as well as every minute
-- Command to show heads that can be found in trades
+What this mod changes can be found in MODIFICATIONS.md
 
 ## Guide on how to update to new Minecraft version
 https://fabricmc.net/wiki/tutorial:migratemappings
 
 ## License
 
-Copyright (C) 2021  Anton Lindroth
+This software is provided under GNU General Public License v3.0 only (SPDX-license-identifier GPL-3.0-only)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+cc-custom
+Copyright (C) 2025  Anton Lindroth
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+

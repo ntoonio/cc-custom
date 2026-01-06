@@ -1,9 +1,10 @@
-package io.antoon.mc.ccc;
+package org.craftnesscraft.ccc;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -13,18 +14,19 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static io.antoon.mc.ccc.CCCMain.CONFIG;
+import static org.craftnesscraft.ccc.CCCustom.CONFIG;;
 
 public class ExternalRequestManager {
-	public static void seenPlayer(ServerPlayerEntity player, boolean online) {
+	public static void seenPlayer(ServerPlayer player, boolean online) {
 		if (!CONFIG.apiEnabled())
 			return;
 
-		String body = "[" + generateSeenPlayerJson(player, online) + "]";
+		String body = "{\"api_secret\": \"" + CONFIG.apiSecret + "\",";
+		body += "\"players\": [" + generateSeenPlayerJson(player, online) + "]";
 		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", body, r -> {});
 	}
 
-	public static void seenMultiplePlayers(List<ServerPlayerEntity> players, boolean online) {
+	public static void seenMultiplePlayers(List<ServerPlayer> players, boolean online) {
 		if (!CONFIG.apiEnabled())
 			return;
 
@@ -57,11 +59,11 @@ public class ExternalRequestManager {
 		});
 	}
 
-	private static String generateSeenPlayerJson(ServerPlayerEntity player, boolean online) {
-		String uuid = player.getUuidAsString();
+	private static String generateSeenPlayerJson(ServerPlayer player, boolean online) {
+		String uuid = player.getStringUUID();
 		String playername = player.getName().getString();
-		Vec3d pos = player.getPos();
-		String dimension = player.getWorld().getDimensionEntry().getIdAsString();
+		Vec3 pos = player.position();
+		String dimension = player.level().dimension().toString();
 
 		String jsonStr = "{";
 		jsonStr += "\"uuid\": \"" + uuid + "\",";
@@ -101,3 +103,4 @@ public class ExternalRequestManager {
 		catch (Exception e) {}
 	}
 }
+

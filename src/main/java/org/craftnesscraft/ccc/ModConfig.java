@@ -1,4 +1,4 @@
-package io.antoon.mc.ccc;
+package org.craftnesscraft.ccc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Properties;
 
-public class CCCConfig {
+public class ModConfig {
 	String apiUrl;
 	String apiSecret;
 
@@ -21,11 +21,8 @@ public class CCCConfig {
 		if (!playerHeadsAvailable())
 			return null;
 
-		return skullOwners.get(CCCMain.cccRandom.nextInt(skullOwners.size()));
+		return skullOwners.get(CCCustom.randomizer.nextInt(skullOwners.size()));
 	}
-
-	// We don't want feature toggles but this is experimental, and we might want to be able to disable
-	public boolean customEndermenBlocksEnabled;
 
 	public boolean apiEnabled() {
 		return apiUrl.length() != 0;
@@ -33,14 +30,12 @@ public class CCCConfig {
 
 	private static Logger LOGGER = LogManager.getLogger("CCC-Config");
 
-	CCCConfig(Properties props) {
+	ModConfig(Properties props) {
 		apiUrl = props.getProperty("api-url", "");
 		apiSecret = props.getProperty("api-secret", "");
-
-		customEndermenBlocksEnabled = props.getProperty("custom-enderman-block", "true").equals("true");
 	}
 
-	static CCCConfig load(String path) {
+	static ModConfig load(String path) {
 		File configFile = new File(path);
 		if (!configFile.exists()) {
 			try {
@@ -59,7 +54,7 @@ public class CCCConfig {
 			LOGGER.warn("Couldn't read the config file", e);
 		}
 
-		return new CCCConfig(props);
+		return new ModConfig(props);
 	}
 
 	private static void writeDefaultConfig(File configFile) throws IOException {
@@ -74,9 +69,10 @@ public class CCCConfig {
 		}
 
 		try (Writer writer = new FileWriter(configFile)) {
-			writer.write("# This is the configuration file for CC-Custom.\n");
+			writer.write("# This is the configuration file for cc-custom.\n");
 			writer.write("# Configuration options can be found at https://github.com/ntoonio/cc-custom/blob/master/CONFIG.md\n");
 			writer.write("# By default, this file will be empty except for this notice.\n");
 		}
 	}
 }
+
