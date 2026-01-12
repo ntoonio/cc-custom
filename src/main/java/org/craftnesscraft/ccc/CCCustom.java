@@ -4,9 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -32,6 +32,31 @@ public class CCCustom implements ModInitializer {
 	public void onInitialize() {
 		CONFIG = ModConfig.load("./config/cc-custom.properties");
 
+		if (CONFIG.apiEnabled()) {
+			LOGGER.info("Will be sending player status to: " + CONFIG.apiUrl);
+		}
+
+		/*TradeOfferHelper.registerWanderingTraderOffers(builder -> {
+            // Common trades
+            builder.addOffersToPool(
+                TradeOfferHelper.WanderingTraderOffersBuilder.SELL_COMMON_ITEMS_POOL,
+				(level, entity, random) -> {
+				//new MerchantOffer(itemCost, itemStack, i, j, f)
+				ItemCost cost = null;
+				ItemStack head = new ItemStack(Items.PLAYER_HEAD, 1);
+
+				Optional<GameProfile> profile = S.getProfileCache().get(username);
+
+				head.set(DataComponents.PROFILE, profile);
+
+				return new MerchantOffer(
+						cost,
+						head,
+						2, 5, 0.05f
+						);
+				});
+		});*/
+
 		// Register command
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			if (environment.includeDedicated) {
@@ -39,25 +64,33 @@ public class CCCustom implements ModInitializer {
 			}
 		});
 
+		// Set up interval to update heads and online players
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-			// Fetch heads
-			ExternalRequestManager.getHeads(heads -> {
-				CONFIG.skullOwners = heads;
-			});
-
-			// Start the players online heart beat
-			PlayerList pl = server.getPlayerList();
-
 			CCCustom.scheduler.scheduleAtFixedRate(() -> {
-				List<ServerPlayer> players = pl.getPlayers();
+				List<ServerPlayer> players = server.getPlayerList().getPlayers();
 				ExternalRequestManager.seenMultiplePlayers(players, true);
+
+				// Fetch heads
+				ExternalRequestManager.getHeads(heads -> {
+					CONFIG.skullOwners = heads;
+				});
 			}, 0, 60, TimeUnit.SECONDS);
 		});
 
+		// Stop the scheduler so it doesn't keep the process running
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			CCCustom.scheduler.shutdown();
 		});
 
+		// Send player connected to the API
+		ServerPlayConnectionEvents.INIT.register((handler, server) -> {
+			ExternalRequestManager.seenPlayer(handler.getPlayer(), true);
+		});
+
+		// Send player disconnect to the API
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			ExternalRequestManager.seenPlayer(handler.getPlayer(), false);
+		});
 
 		// Disable elytra in overworld and above nether roof
 		EntityElytraEvents.ALLOW.register((entity) -> {

@@ -2,6 +2,8 @@ package org.craftnesscraft.ccc;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -21,24 +23,28 @@ public class ExternalRequestManager {
 		if (!CONFIG.apiEnabled())
 			return;
 
-		String body = "{\"api_secret\": \"" + CONFIG.apiSecret + "\",";
-		body += "\"players\": [" + generateSeenPlayerJson(player, online) + "]";
-		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", body, r -> {});
+		JsonArray playerData = new JsonArray();
+		playerData.add(generateSeenPlayerJson(player, online));
+		JsonObject bodyJson = new JsonObject();
+		bodyJson.add("players", playerData);
+
+		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", bodyJson.toString(), r -> {});
 	}
 
 	public static void seenMultiplePlayers(List<ServerPlayer> players, boolean online) {
 		if (!CONFIG.apiEnabled())
 			return;
 
-		List<String> playerData = new ArrayList<>();
+		JsonArray playerData = new JsonArray();
 
 		for (int i = 0; i < players.size(); i++) {
 			playerData.add(generateSeenPlayerJson(players.get(i), online));
 		}
 
-		String body = "[" + String.join(",", playerData) + "]";
+		JsonObject bodyJson = new JsonObject();
+		bodyJson.add("players", playerData);
 
-		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", body, r -> {});
+		requestPut(CONFIG.apiUrl + "ccc/api/seenPlayers", bodyJson.toString(), r -> {});
 	}
 
 	public static void getHeads(Consumer<List<String>> onComplete) {
@@ -59,21 +65,20 @@ public class ExternalRequestManager {
 		});
 	}
 
-	private static String generateSeenPlayerJson(ServerPlayer player, boolean online) {
+	private static JsonObject generateSeenPlayerJson(ServerPlayer player, boolean online) {
 		String uuid = player.getStringUUID();
 		String playername = player.getName().getString();
 		Vec3 pos = player.position();
 		String dimension = player.level().dimension().toString();
 
-		String jsonStr = "{";
-		jsonStr += "\"uuid\": \"" + uuid + "\",";
-		jsonStr += "\"playername\": \"" + playername + "\",";
-		jsonStr += "\"position\": \"" + pos.x + ";" + pos.y + ";" + pos.z + "\",";
-		jsonStr += "\"dimension\": \"" + dimension + "\",";
-		jsonStr += "\"online\": " + (online ? "true" : "false");
-		jsonStr += "}";
+		JsonObject j = new JsonObject();
+		j.addProperty("uuid", uuid);
+		j.addProperty("playername", playername);
+		j.addProperty("position", pos.x + ";" + pos.y + ";" + pos.z);
+		j.addProperty("dimension", dimension);
+		j.addProperty("online", online);
 
-		return jsonStr;
+		return j;
 	}
 
 	private static void requestGet(String url, Consumer<HttpResponse<String>> onResponse) {
